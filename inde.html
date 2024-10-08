@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/76462435?s=400&u=a8207729fb6ec02ecb92f3477e6d13b022b3f52a&v=4" type="image/x-icon">
+    <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/76462435?s=400&u=a8207729fb6ec02ecb92f3477e6d13b022b3f52a&v=4" type="image/x-icon">
+    <title>IM-ATOMIC Bot - Hacker Style</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Import Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #000000;
+            color: #00ff00;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Supaya partikel Matrix tidak keluar dari halaman */
+        }
+
+        /* Partikel Matrix */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Di belakang konten */
+            background-color: black;
+        }
+
+        /* Animasi Ketik */
+        .typing-container {
+            font-size: 24px;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            margin-bottom: 20px;
+        }
+
+        .typing-effect::after {
+            content: '|';
+            animation: blink-cursor 0.7s infinite;
+        }
+
+        @keyframes blink-cursor {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        #clock-container {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #clock {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        #name {
+            font-size: 24px;
+            color: #00ff00;
+            margin: 20px 0;
+        }
+
+        .btn-custom {
+            background-color: transparent;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-custom:hover {
+            background-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00;
+        }
+
+        .btn-custom img {
+            width: 20px; /* Ukuran ikon */
+            height: 20px; /* Ukuran ikon */
+            margin-right: 5px; /* Jarak antara ikon dan teks */
+        }
+
+        a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #ffffff;
+        }
+
+        /* Styling untuk ikon profil */
+        .profile-icon {
+            width: 100px; /* Atur lebar sesuai kebutuhan */
+            height: 100px; /* Atur tinggi sesuai kebutuhan */
+            border-radius: 50%; /* Bentuk lingkaran */
+            overflow: hidden; /* Supaya gambar tidak keluar dari lingkaran */
+            border: 2px solid #00ff00; /* Border hijau */
+            box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00; /* Efek cahaya */
+            margin-bottom: 20px; /* Jarak dengan teks di bawahnya */
+        }
+
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Memastikan gambar terisi penuh */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Matrix Rain Effect -->
+    <canvas id="matrix"></canvas>
+
+    <!-- Ikon Profil -->
+    <div class="profile-icon">
+        <img src="https://pomf2.lain.la/f/ec9vdazg.jpg" alt="Profile Icon">
+    </div>
+
+    <!-- Animasi Ketik Nama -->
+    <div class="typing-container">
+        <span class="typing-effect" id="typing-name">HamzLegendz</span>
+    </div>
+
+    <div id="clock-container">
+        <div id="name">Status Server</div>
+        <div>Bot: Online</div>
+        <div id="clock-wib"></div>
+        <div id="clock-wita"></div>
+        <div id="clock-wit"></div>
+    </div>
+    
+    <div class="container text-center">
+        <a href="https://wa.me/6289520430523" class="btn btn-custom" target="_blank" onclick="playClickSound()">
+            <img src="https://icons8.com/icon/16466/whatsapp" alt="WhatsApp Logo">Use Bot
+        </a>
+    </div>
+    <br>
+    <div class="container text-center">
+        <a href="https://hamz-website-blogv1.vercel.app/" class="btn btn-custom" target="_blank" onclick="playClickSound()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Google_Chrome_icon_%282011-2019%29.png" alt="Chrome Logo">Visit My Website
+        </a>
+    </div>
+
+    <!-- Suara Klik -->
+    <audio id="click-sound" src="https://www.soundjay.com/button/sounds/button-3.mp3"></audio>
+
+    <script>
+        // Suara Klik
+        function playClickSound() {
+            document.getElementById("click-sound").play();
+        }
+
+        // Animasi Ketik Nama
+        const nameText = "HamzLegendz";
+        let nameIndex = 0;
+
+        function typeName() {
+            if (nameIndex < nameText.length) {
+                document.getElementById("typing-name").innerHTML = nameText.substring(0, nameIndex + 1);
+                nameIndex++;
+                setTimeout(typeName, 200);
+            }
+        }
+
+        typeName();
+
+        // Clock Update
+        function updateClock() {
+            const now = new Date();
+            const timeStringWIB = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Jakarta' });
+            const timeStringWITA = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Makassar' });
+            const timeStringWIT = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Jayapura' });
+
+            document.getElementById('clock-wib').textContent = timeStringWIB + " (WIB)";
+            document.getElementById('clock-wita').textContent = timeStringWITA + " (WITA)";
+            document.getElementById('clock-wit').textContent = timeStringWIT + " (WIT)";
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Matrix Rain Animation
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
+        const font_size = 16;
+        const columns = canvas.width / font_size;
+        const drops = [];
+
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#00ff00";
+            ctx.font = font_size + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                ctx.fillText(text, i * font_size, drops[i] * font_size);
+
+                if (drops[i] * font_size > canvas.height&& Math.random() > 0.975) {
+                    drops[i] = 0; // Reset drop
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35); // Menggambar setiap 35 ms
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+      </html>
